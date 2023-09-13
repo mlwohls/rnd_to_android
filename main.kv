@@ -1,0 +1,126 @@
+ScreenManager:
+    MainScreen:
+    DrillsScreen:
+    TwoByFourScreen:
+
+<MainScreen>:
+    name: 'main'
+    MDLabel:
+        text: 'RND'
+        font_style:  'H1'
+        halign: 'center'
+        pos_hint: {'center_x': 0.5, 'center_y' : 0.6}
+        bold: True
+    MDLabel:
+        text: 'Golf'
+        font_style:  'H3'
+        theme_text_color: "Custom"
+        text_color : (0,0.4,0,1)
+        halign: 'center'
+        pos_hint: {'center_x': 0.5, 'center_y' : 0.53}
+        bold: True
+    MDLabel:
+        markup: True
+        text: 'Your best [b]R[/b]OU[b]ND[/b]s are EA[b]RN[/b]E[b]D[/b] through practice'
+        font_style:  'Body1'
+        halign: 'center'
+        pos_hint: {'center_x': 0.5, 'center_y' : 0.49}
+        italics: True
+    MDBottomAppBar:
+        MDTopAppBar:
+            icon: 'play'
+            type: 'bottom'
+            on_action_button: root.manager.current = 'drills'
+    
+<DrillsScreen>:
+    name: 'drills'
+    MDBoxLayout:
+        orientation: "vertical"
+        MDTopAppBar:
+            title : 'Drills'
+            left_action_items: [["arrow-left", lambda x: setattr(root.manager, 'current', 'main')]]
+        ScrollView:
+            MDList:
+                TwoLineListItem:
+                    text: 'Two x Fours'
+                    secondary_text: 'Up & Down Practice'
+                    on_release: root.manager.current = 'twobyfour'
+                TwoLineListItem:
+                    text: 'Star Drill'
+                    secondary_text: 'Short Putts Under Pressure'
+        MDRectangleFlatButton:
+            text: 'Back'
+            pos_hint: {'center_x':0.5,'center_y':0.1}
+            on_press: root.manager.current = 'main'
+        
+
+<TwoByFourScreen>:
+    name: 'twobyfour'
+    MDBoxLayout:
+        orientation: "vertical"
+        
+        MDTopAppBar:
+            title : 'Two x Fours'
+            left_action_items: [["arrow-left", lambda x: setattr(root.manager, 'current', 'drills')]]
+        MDLabel:
+            markup: True
+            text: 'Get Up & Down with [b]two[/b] balls in [b]four[/b] strokes.\n At each station, chip 2 balls towards the same hole and then putt each until holed out.[b] Score = Total Combined Strokes'
+            font_style:  'Body2'
+            halign: 'left'
+            valign: 'top'
+            size_hint: 1, 0.05
+
+        MDBoxLayout:
+            orientation: "vertical"
+            size_hint: 1, 0.4
+            padding: 10
+
+            MDBoxLayout:
+                id: twobyfour_current_container
+
+            MDIconButton:
+                icon: 'plus-thick'
+                md_bg_color: app.theme_cls.primary_color
+                elevation_normal: 12
+                on_release: (root.show_dialog(), root.pull_current_scores())
+        MDBoxLayout:
+            id: twobyfour_history_container
+            size_hint: 1, 0.4
+            orientation: "vertical"
+
+            MDLabel:
+                markup: True
+                text: 'History'
+                font_style:  'H4'
+                halign: 'left'
+                valign: 'top'
+                size_hint: 1, 0.05
+
+
+
+
+
+<TwoByFourDialog>:
+    orientation: "vertical"
+    spacing: "10dp"
+    size_hint: 1, None
+    height: "100dp"
+
+    BoxLayout:
+        orientation: 'vertical'
+        MDTextField:
+            id: twobyfour_score
+            text: ''
+            hint_text: "Add Score..."
+            max_text_length: 2
+            input_filter: 'int'
+
+        BoxLayout:
+            orientation: 'horizontal'
+
+            MDRaisedButton:
+                text: "SAVE"
+                on_release: app.root.get_screen("twobyfour").add_score('twobyfours', app.session_id, twobyfour_score); twobyfour_score.text = ''
+            MDFlatButton:
+                text: 'CANCEL'
+                on_release: app.root.get_screen("twobyfour").close_dialog()
